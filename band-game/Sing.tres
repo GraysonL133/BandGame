@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://dv58272u34d1a"]
+
+[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://card_data.gd" id="1_4fd75"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bnydf"]
+
+[resource]
+script = ExtResource("1_4fd75")
+card_name = "Sing"
+description = "Add 10 Sing."
+sing = 10
+art = SubResource("PlaceholderTexture2D_bnydf")
+effect = 2
+metadata/_custom_type_script = "uid://bx6y3057cudoi"
