@@ -1,20 +1,23 @@
 [gd_scene format=3 uid="uid://b8jbs1mxfbfx5"]
 
-[ext_resource type="Script" uid="uid://d1ldqep0pyhp8" path="res://game.gd" id="1_uu6xs"]
+[ext_resource type="Script" uid="uid://d1ldqep0pyhp8" path="res://Scripts/game.gd" id="1_uu6xs"]
 [ext_resource type="PackedScene" uid="uid://dv1wjw47oodul" path="res://Card.tscn" id="2_r0du0"]
-[ext_resource type="Resource" uid="uid://cfq8vsh4xbmcn" path="res://Lead.tres" id="3_3dxm6"]
-[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://card_data.gd" id="3_cm0pq"]
-[ext_resource type="Script" uid="uid://2yfkgw1e5e6i" path="res://play_area.gd" id="3_r0du0"]
-[ext_resource type="Resource" uid="uid://d1d64e5neud2i" path="res://Rhythm.tres" id="4_lgr22"]
-[ext_resource type="Resource" uid="uid://dv58272u34d1a" path="res://Sing.tres" id="6_trn2v"]
-[ext_resource type="Script" uid="uid://d380rjxeklfh7" path="res://label.gd" id="7_lgr22"]
+[ext_resource type="Resource" uid="uid://cfq8vsh4xbmcn" path="res://Cards/Lead.tres" id="3_3dxm6"]
+[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="3_cm0pq"]
+[ext_resource type="Script" uid="uid://2yfkgw1e5e6i" path="res://Scripts/play_area.gd" id="3_r0du0"]
+[ext_resource type="Resource" uid="uid://d1d64e5neud2i" path="res://Cards/Rhythm.tres" id="4_lgr22"]
+[ext_resource type="Resource" uid="uid://dv58272u34d1a" path="res://Cards/Sing.tres" id="6_trn2v"]
+[ext_resource type="Script" uid="uid://d380rjxeklfh7" path="res://Scripts/label.gd" id="7_lgr22"]
 
 [node name="Main" type="Node2D" unique_id=1658555960]
 script = ExtResource("1_uu6xs")
 card_scene = ExtResource("2_r0du0")
 starting_deck = Array[ExtResource("3_cm0pq")]([ExtResource("3_3dxm6"), ExtResource("4_lgr22"), ExtResource("6_trn2v")])
 
-[node name="PlayArea" type="Control" parent="." unique_id=2021892682]
+[node name="CanvasLayer2" type="CanvasLayer" parent="." unique_id=2102306221]
+layer = 2
+
+[node name="PlayArea" type="Control" parent="CanvasLayer2" unique_id=2021892682]
 layout_mode = 3
 anchors_preset = 0
 offset_left = 599.0
@@ -80,11 +83,14 @@ scale = Vector2(3.3019056, 2.5880637)
 text = "Total Label"
 script = ExtResource("7_lgr22")
 
-[node name="ghostContainer" type="HBoxContainer" parent="." unique_id=1987951497]
-offset_left = 615.0
-offset_top = 257.0
-offset_right = 655.0
-offset_bottom = 297.0
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=2069914496]
 
-[connection signal="card_played" from="PlayArea" to="HandContainer/Card" method="_on_play_area_card_played"]
+[node name="ghostContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=1987951497]
+offset_left = 500.0
+offset_top = 300.0
+offset_right = 660.0
+offset_bottom = 500.0
+theme_override_constants/separation = 200
+
+[connection signal="card_played" from="CanvasLayer2/PlayArea" to="HandContainer/Card" method="_on_play_area_card_played"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

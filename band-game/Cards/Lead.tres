@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="CardData" format=3 uid="uid://cfq8vsh4xbmcn"]
 
-[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://card_data.gd" id="1_0cci2"]
+[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="1_0cci2"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_20pc6"]
 

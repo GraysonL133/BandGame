@@ -3,6 +3,9 @@ class_name Card
 extends Control
 
 @export var data: CardData
+@export var start_y := 0.0
+@export var animation_time := 0.0
+@export var is_animating := false
 
 @onready var name_label: Label = $NameLabel
 @onready var cost_label: Label = $CostLabel
@@ -22,6 +25,10 @@ func setup(card_data: CardData) -> void:
 		background.texture = data.art
 
 
+func start_ghost_animation():
+	is_animating = true
+	animation_time = 0.0
+	start_y = position.y
 
 # --- Drag and drop (Godot 4 Control virtuals) ---
 func _get_drag_data(_at_position: Vector2) -> Variant:
@@ -31,3 +38,9 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	set_drag_preview(preview)
 	# Return THIS card as the payload the play area will receive.
 	return self
+
+func _process(delta):
+	if not is_animating:
+		return
+	animation_time += delta
+	position.y = start_y + sin(animation_time * 2.0) * 10.0

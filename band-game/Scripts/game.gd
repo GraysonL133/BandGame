@@ -6,10 +6,10 @@ extends Node2D
 
 # Declare Score Variables
 @onready var rhythmScore = 0
-@onready var leadScore = 1
-@onready var singScore = 1
+@onready var leadScore = 0
+@onready var singScore = 0
 @onready var totalScore = 0
-
+var ghost_nodes: Array = []
 var deck: Array[CardData] = []
 var hand: Array[Card] = []
 var discard: Array[CardData] = []
@@ -18,7 +18,9 @@ var rCards: Array = []
 const HAND_SIZE := 5
 
 @onready var hand_container: HBoxContainer = $HandContainer
-@onready var ghost_container: HBoxContainer = $ghostContainer
+@onready var ghost_container: HBoxContainer = $CanvasLayer/ghostContainer 
+
+@onready var ghost: Control
 
 # game.gd (continued)
 @export var max_energy := 3
@@ -27,7 +29,7 @@ var energy := 3
 
 
 func _ready_connections() -> void:
-	$PlayArea.card_played.connect(_on_card_played)
+	$CanvasLayer2/PlayArea.card_played.connect(_on_card_played)
 
 func _on_card_played(card: Card) -> void:
 	
@@ -48,7 +50,8 @@ func apply_effect(card_data: CardData) -> void:
 	match card_data.effect:
 		CardData.Effect.Rhythm:
 			rCards.append(card_data)
-			# displayGhost(Card)
+			createGhost(card_data)
+			rhythmScore += card_data.rhythm
 		CardData.Effect.Lead:
 			leadScore += card_data.lead
 			print("New Lead Score: ", card_data.effect)
@@ -64,13 +67,26 @@ func clearScore():
 	rhythmScore = 0;
 	leadScore = 0;
 	singScore = 0;
-	
-func displayGhost(card):
-	card = card_scene.instantiate()
-	var ghost = card.duplicate()
+	totalScore = 0;
+
+func clear_ghosts():
+	for i in ghost_nodes.size():
+		ghost.queue_free()
+	ghost_nodes.clear()
+	rCards.clear()
+
+func createGhost(card):
+	ghost = card_scene.instantiate()
+	ghost.data = card
 	ghost_container.add_child(ghost)
+	ghost_nodes.append(ghost)
 	ghost.modulate.a = 0.5
-	ghost.position = Vector2(500, 300)
+	ghost_container.position = Vector2(500, 300)
+	ghost.start_ghost_animation()
+	print("Ghost added: ", ghost)
+	print("Ghost visible: ", ghost.visible)
+	print("Ghost position: ", ghost.global_position)
+	print("Ghost size: ", ghost.size)
 
 func _ready() -> void:
 	_ready_connections()
@@ -110,6 +126,7 @@ func start_turn() -> void:
 	energy = max_energy
 	draw_hand()
 
+
 func end_turn() -> void:
 	# Discard the whole hand.
 	for card in hand:
@@ -117,9 +134,13 @@ func end_turn() -> void:
 		card.queue_free()
 	calculateScore(rhythmScore, leadScore, singScore)
 	hand.clear()
+	clear_ghosts()
 	clearScore()
 	start_turn()                     # next turn (enemy turn would go here)
 
 
 func _on_button_pressed() -> void:
 	end_turn()
+
+var ghost_time := 0.0
+var ghost_start_y := 0.0
