@@ -32,8 +32,8 @@ const HAND_SIZE := 5
 @onready var ghost: Control
 
 # game.gd (continued)
-@export var max_energy := 3
-var energy := 3
+@export var max_energy := 999
+var energy := 999
 
 
 
@@ -54,18 +54,22 @@ func _on_card_played(card: Card) -> void:
 	hand.erase(card)
 	discard.append(card_data)
 	card.queue_free()                # remove the scene instance
+
 func apply_effect(card_data: CardData) -> void:
-	match card_data.effect:
-		CardData.Effect.Rhythm:
+	card_data.effect.execute(self, null)
+	match card_data.type:
+		1:
 			rCards.append(card_data)
 			createGhost(card_data)
-			rhythmScore += card_data.rhythm
-		CardData.Effect.Lead:
-			leadScore += card_data.lead
-			print("New Lead Score: ", card_data.effect)
-		CardData.Effect.Sing:
-			singScore += card_data.sing
-			print("New Sing Score: ", card_data.effect)
+
+func addRhythm(amount):
+	rhythmScore += amount
+
+func addLead(amount):
+	leadScore += amount
+
+func addSing(amount):
+	singScore += amount
 
 func calculateScore(rhythm, lead, sing):
 	for i in range(rCards.size()):

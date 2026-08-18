@@ -10,6 +10,7 @@ extends Resource
 @export var sing: int = 0
 @export var art: Texture2D
 
-# Card behaviour as an enum keeps "what does this card do" data-driven.
-enum Effect { Rhythm, Lead, Sing }
-@export var effect: Effect = Effect.Rhythm
+@export var effect: CardEffect
+
+#Give each card a type depending on class Rhythm is 1, Lead is 2, Sing is 3
+@export var type: int
