@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bjy0dh8j6gvfa"]
+
+[ext_resource type="Script" uid="uid://bb78twp5dlc3" path="res://Scripts/shop.gd" id="1_kjfcx"]
+
+[node name="Shop" type="Node2D" unique_id=1341999271]
+script = ExtResource("1_kjfcx")
+
+[node name="Button" type="Button" parent="." unique_id=1979497881]
+offset_left = 313.0
+offset_top = 288.0
+offset_right = 321.0
+offset_bottom = 296.0
+scale = Vector2(3.232348, 3.1002052)
+text = "Back to game"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

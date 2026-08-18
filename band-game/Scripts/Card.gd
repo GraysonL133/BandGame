@@ -11,10 +11,12 @@ extends Control
 @onready var cost_label: Label = $CostLabel
 @onready var desc_label: Label = $DescLabel
 @onready var background: TextureRect = $Background
+@onready var border: Panel = $Border
 
 func _ready() -> void:
 	if data:
 		setup(data)
+	border.visible = false
 
 func setup(card_data: CardData) -> void:
 	data = card_data

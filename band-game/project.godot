@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Band Game"
-run/main_scene="uid://b8jbs1mxfbfx5"
+run/main_scene="uid://bh4f606h3ixjw"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
 [display]

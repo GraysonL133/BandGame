@@ -3,12 +3,21 @@ extends Node2D
 
 @export var card_scene: PackedScene          # Card.tscn
 @export var starting_deck: Array[CardData] = []
+@onready var roundLabel = $WorldLayer/RoundLabel
 
 # Declare Score Variables
 @onready var rhythmScore = 0
 @onready var leadScore = 0
 @onready var singScore = 0
 @onready var totalScore = 0
+@onready var turnScore = 0
+
+#Declare which round it is
+@onready var currentRound = 0
+@export var roundTarget = 5
+
+@onready var spacing = 100
+
 var ghost_nodes: Array = []
 var deck: Array[CardData] = []
 var hand: Array[Card] = []
@@ -17,8 +26,8 @@ var rCards: Array = []
 
 const HAND_SIZE := 5
 
-@onready var hand_container: HBoxContainer = $HandContainer
-@onready var ghost_container: HBoxContainer = $CanvasLayer/ghostContainer 
+@onready var hand_container = $HandLayer/HandContainer
+@onready var ghost_container: HBoxContainer = $GhostLayer/ghostContainer 
 
 @onready var ghost: Control
 
@@ -29,7 +38,7 @@ var energy := 3
 
 
 func _ready_connections() -> void:
-	$CanvasLayer2/PlayArea.card_played.connect(_on_card_played)
+	$WorldLayer/PlayArea.card_played.connect(_on_card_played)
 
 func _on_card_played(card: Card) -> void:
 	
@@ -45,7 +54,6 @@ func _on_card_played(card: Card) -> void:
 	hand.erase(card)
 	discard.append(card_data)
 	card.queue_free()                # remove the scene instance
-
 func apply_effect(card_data: CardData) -> void:
 	match card_data.effect:
 		CardData.Effect.Rhythm:
@@ -61,17 +69,19 @@ func apply_effect(card_data: CardData) -> void:
 
 func calculateScore(rhythm, lead, sing):
 	for i in range(rCards.size()):
-		totalScore = (((totalScore + rCards[i].rhythm) * lead) * sing)
+		turnScore = (((totalScore + rCards[i].rhythm) * lead) * sing)
+	totalScore = (totalScore + turnScore)
 
 func clearScore():
-	rhythmScore = 0;
-	leadScore = 0;
-	singScore = 0;
-	totalScore = 0;
+	rhythmScore = 0
+	leadScore = 0
+	singScore = 0
+	turnScore = 0
 
 func clear_ghosts():
-	for i in ghost_nodes.size():
-		ghost.queue_free()
+	for ghost_node in ghost_nodes:
+		ghost_node.queue_free()
+	
 	ghost_nodes.clear()
 	rCards.clear()
 
@@ -111,10 +121,21 @@ func draw_card() -> void:
 	hand_container.add_child(card)   # HBoxContainer lays it out for us
 	card.setup(card_data)
 	hand.append(card)
+	rearrange_hand()
 
 func draw_hand() -> void:
 	for i in HAND_SIZE:
 		draw_card()
+
+func rearrange_hand():
+	for i in range(hand.size()):
+		var card = hand[i]
+		
+		# Calculate Y position: index multiplied by spacing
+		var target_x = i * spacing
+		
+		# Set the position (X stays 0, Y changes based on position in hand)
+		card.global_position = Vector2(500 + target_x, 500)
 
 func reshuffle_discard_into_deck() -> void:
 	deck.append_array(discard)
@@ -123,8 +144,10 @@ func reshuffle_discard_into_deck() -> void:
 	
 # game.gd (continued)
 func start_turn() -> void:
+	updateRound()
 	energy = max_energy
 	draw_hand()
+
 
 
 func end_turn() -> void:
@@ -136,11 +159,30 @@ func end_turn() -> void:
 	hand.clear()
 	clear_ghosts()
 	clearScore()
-	start_turn()                     # next turn (enemy turn would go here)
+	start_turn()
+	if (currentRound > roundTarget):
+		goToShop()                     # next turn (enemy turn would go here)
 
+func goToShop():
+	get_tree().change_scene_to_file("res://Scenes/Shop.tscn")
+
+func updateRound():
+	currentRound = currentRound + 1
+	print(str(currentRound) + "/" + str(roundTarget))
+	roundLabel.text = str(currentRound) + "/" + str(roundTarget)
 
 func _on_button_pressed() -> void:
 	end_turn()
 
 var ghost_time := 0.0
 var ghost_start_y := 0.0
+
+
+func _on_add_rhythm_button_pressed() -> void:                 # nothing left anywhere
+
+	var card_data: CardData = preload("res://Cards/Rhythm.tres")
+	var card: Card = card_scene.instantiate()
+	hand_container.add_child(card)   # HBoxContainer lays it out for us
+	card.setup(card_data)
+	hand.append(card)
+	rearrange_hand()
