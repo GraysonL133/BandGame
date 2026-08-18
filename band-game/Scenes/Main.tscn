@@ -6,6 +6,7 @@
 [ext_resource type="Resource" uid="uid://cfq8vsh4xbmcn" path="res://Cards/Lead.tres" id="4_grg3l"]
 [ext_resource type="Resource" uid="uid://d1d64e5neud2i" path="res://Cards/Rhythm.tres" id="5_frkhe"]
 [ext_resource type="Resource" uid="uid://dv58272u34d1a" path="res://Cards/Sing.tres" id="6_1p5hy"]
+[ext_resource type="Resource" uid="uid://dulhr2fpyfbpq" path="res://Cards/RhythmTwo.tres" id="7_bmxlf"]
 [ext_resource type="Script" uid="uid://5vwghrcpoaqc" path="res://Scripts/Hand.gd" id="7_vy5pj"]
 [ext_resource type="Script" uid="uid://2yfkgw1e5e6i" path="res://Scripts/play_area.gd" id="8_erwvk"]
 [ext_resource type="Script" uid="uid://d380rjxeklfh7" path="res://Scripts/label.gd" id="9_2w5on"]
@@ -13,7 +14,7 @@
 [node name="Main" type="Node2D" unique_id=1658555960]
 script = ExtResource("1_vy5pj")
 card_scene = ExtResource("2_bmxlf")
-starting_deck = Array[ExtResource("3_4kpch")]([ExtResource("4_grg3l"), ExtResource("5_frkhe"), ExtResource("6_1p5hy")])
+starting_deck = Array[ExtResource("3_4kpch")]([ExtResource("4_grg3l"), ExtResource("5_frkhe"), ExtResource("6_1p5hy"), ExtResource("7_bmxlf")])
 
 [node name="HandLayer" type="CanvasLayer" parent="." unique_id=1302286153]
 layer = 10
@@ -140,11 +141,19 @@ text = "Add a sing Card"
 [node name="GhostLayer" type="CanvasLayer" parent="." unique_id=2069914496]
 
 [node name="ghostContainer" type="HBoxContainer" parent="GhostLayer" unique_id=1987951497]
-offset_left = 500.0
-offset_top = 300.0
-offset_right = 660.0
-offset_bottom = 500.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -80.0
+offset_top = -100.0
+offset_right = 80.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/separation = 200
+alignment = 1
 
 [connection signal="mouse_entered" from="HandLayer/HandContainer/Card" to="HandLayer/HandContainer/Card" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="HandLayer/HandContainer/Card" to="HandLayer/HandContainer/Card" method="_on_mouse_exited"]

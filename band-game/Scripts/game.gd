@@ -71,6 +71,12 @@ func addLead(amount):
 func addSing(amount):
 	singScore += amount
 
+func duplicateLastRCard():
+		var card_data = rCards.back()
+		print("Card duplicated: ", str(card_data))
+		rCards.append(card_data)
+		createGhost(card_data)
+
 func calculateScore(rhythm, lead, sing):
 	for i in range(rCards.size()):
 		turnScore = (((totalScore + rCards[i].rhythm) * lead) * sing)
