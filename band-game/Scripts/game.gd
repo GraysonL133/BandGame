@@ -6,17 +6,20 @@ extends Node2D
 @onready var roundLabel = $WorldLayer/RoundLabel
 
 # Declare Score Variables
-@onready var rhythmScore = 0
-@onready var leadScore = 0
-@onready var singScore = 0
-@onready var totalScore = 0
-@onready var turnScore = 0
+#@onready var rhythmScore = 0
+#@onready var leadScore = 0
+#@onready var singScore = 0
+#@onready var totalScore = 0
+#@onready var turnScore = 0
+
+
+@onready var lead_label: Label
 
 #Declare which round it is
 @onready var currentRound = 0
 @export var roundTarget = 5
 
-@onready var spacing = 100
+@onready var spacing = 60
 
 var ghost_nodes: Array = []
 var deck: Array[CardData] = []
@@ -39,6 +42,7 @@ var energy := 999
 
 func _ready_connections() -> void:
 	$WorldLayer/PlayArea.card_played.connect(_on_card_played)
+	$HandLayer/Card.cardHovered.connect(_on_card_hovered)
 
 func _on_card_played(card: Card) -> void:
 	
@@ -62,31 +66,36 @@ func apply_effect(card_data: CardData) -> void:
 			rCards.append(card_data)
 			createGhost(card_data)
 
+
 func addRhythm(amount):
-	rhythmScore += amount
+	GameState.rhythmScore += amount
 
 func addLead(amount):
-	leadScore += amount
+	GameState.leadScore += amount
 
 func addSing(amount):
-	singScore += amount
+	GameState.singScore += amount
 
 func duplicateLastRCard():
 		var card_data = rCards.back()
-		print("Card duplicated: ", str(card_data))
+		if (card_data == null):
+			return
 		rCards.append(card_data)
 		createGhost(card_data)
 
+func _on_card_hovered(card):
+	rearrange_hand(card)
+
 func calculateScore(rhythm, lead, sing):
 	for i in range(rCards.size()):
-		turnScore = (((totalScore + rCards[i].rhythm) * lead) * sing)
-	totalScore = (totalScore + turnScore)
+		GameState.turnScore = (((GameState.totalScore + rCards[i].rhythm) * lead) * sing)
+	GameState.totalScore = (GameState.totalScore + GameState.turnScore)
 
 func clearScore():
-	rhythmScore = 0
-	leadScore = 0
-	singScore = 0
-	turnScore = 0
+	GameState.rhythmScore = 0
+	GameState.leadScore = 1
+	GameState.singScore = 1
+	GameState.turnScore = 0
 
 func clear_ghosts():
 	for ghost_node in ghost_nodes:
@@ -102,11 +111,8 @@ func createGhost(card):
 	ghost_nodes.append(ghost)
 	ghost.modulate.a = 0.5
 	ghost_container.position = Vector2(500, 300)
+	ghost.scale = Vector2(0.2,0.2)
 	ghost.start_ghost_animation()
-	print("Ghost added: ", ghost)
-	print("Ghost visible: ", ghost.visible)
-	print("Ghost position: ", ghost.global_position)
-	print("Ghost size: ", ghost.size)
 
 func _ready() -> void:
 	_ready_connections()
@@ -131,21 +137,33 @@ func draw_card() -> void:
 	hand_container.add_child(card)   # HBoxContainer lays it out for us
 	card.setup(card_data)
 	hand.append(card)
-	rearrange_hand()
+	card.cardHovered.connect(_on_card_hovered)
+	rearrange_hand(card)
 
 func draw_hand() -> void:
 	for i in HAND_SIZE:
 		draw_card()
 
-func rearrange_hand():
+func rearrange_hand(card):
+	
+	var center_index = (hand.size() - 1) / 2.0
+	
 	for i in range(hand.size()):
-		var card = hand[i]
-		
-		# Calculate Y position: index multiplied by spacing
-		var target_x = i * spacing
-		
-		# Set the position (X stays 0, Y changes based on position in hand)
-		card.global_position = Vector2(500 + target_x, 500)
+		# Base resting position for each card
+		var target_x = (i - center_index) * spacing
+		var target_y = 0.0
+		var hovered_index = hand.find(card)
+		# Apply spread if a card is currently hovered
+		if card != null:
+			if i < hovered_index:
+				target_x -= spacing # Push left
+			elif i > hovered_index:
+				target_x += spacing # Push right
+			else:
+				target_y -= 40.0 # Pop the hovered card upwards slightly
+			var tween = create_tween().set_parallel(true).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			tween.tween_property(hand[i], "position:x", target_x, 0.2)
+			tween.tween_property(hand[i], "position:y", target_y, 0.2)
 
 func reshuffle_discard_into_deck() -> void:
 	deck.append_array(discard)
@@ -165,9 +183,13 @@ func end_turn() -> void:
 	for card in hand:
 		discard.append(card.data)
 		card.queue_free()
-	calculateScore(rhythmScore, leadScore, singScore)
+	calculateScore(GameState.rhythmScore, GameState.leadScore, GameState.singScore)
 	hand.clear()
 	clear_ghosts()
+	print("Lead Score: " + str(GameState.leadScore))
+	print("Sing Score: " + str(GameState.singScore))
+	print("Rhythm Score: " + str(GameState.rhythmScore))
+	print("Total Score: " + str(GameState.totalScore))
 	clearScore()
 	start_turn()
 	if (currentRound > roundTarget):
@@ -178,7 +200,6 @@ func goToShop():
 
 func updateRound():
 	currentRound = currentRound + 1
-	print(str(currentRound) + "/" + str(roundTarget))
 	roundLabel.text = str(currentRound) + "/" + str(roundTarget)
 
 func _on_button_pressed() -> void:
@@ -189,10 +210,18 @@ var ghost_start_y := 0.0
 
 
 func _on_add_rhythm_button_pressed() -> void:                 # nothing left anywhere
-
 	var card_data: CardData = preload("res://Cards/Rhythm.tres")
-	var card: Card = card_scene.instantiate()
-	hand_container.add_child(card)   # HBoxContainer lays it out for us
-	card.setup(card_data)
-	hand.append(card)
-	rearrange_hand()
+	deck.append(card_data)
+	draw_card()
+
+
+func _on_add_lead_button_pressed() -> void:
+	var card_data: CardData = preload("res://Cards/Lead.tres")
+	deck.append(card_data)
+	draw_card()
+
+
+func _on_add_sing_button_pressed() -> void:
+	var card_data: CardData = preload("res://Cards/Sing.tres")
+	deck.append(card_data)
+	draw_card()

@@ -11,12 +11,19 @@ extends Control
 @onready var cost_label: Label = $CostLabel
 @onready var desc_label: Label = $DescLabel
 @onready var background: TextureRect = $Background
-@onready var border: Panel = $Border
+#@onready var border: Panel = $Border
+@onready var lead_label: Label = $LeadLabel
+
+@onready var Main = $"../.."
+
+signal cardHovered(card: Card)
 
 func _ready() -> void:
 	if data:
 		setup(data)
-	border.visible = false
+	lead_label.visible = false
+	#border.visible = false
+	#print(str(Main))
 
 func setup(card_data: CardData) -> void:
 	data = card_data
@@ -31,6 +38,8 @@ func start_ghost_animation():
 	is_animating = true
 	animation_time = 0.0
 	start_y = position.y
+	lead_label.visible = true
+	#border.visible = false
 
 # --- Drag and drop (Godot 4 Control virtuals) ---
 func _get_drag_data(_at_position: Vector2) -> Variant:
@@ -46,3 +55,8 @@ func _process(delta):
 		return
 	animation_time += delta
 	position.y = start_y + sin(animation_time * 2.0) * 10.0
+	lead_label.text = ("x" + str(GameState.leadScore))
+
+func _on_mouse_entered() -> void:
+	cardHovered.emit(self)
+	#border.visible = true

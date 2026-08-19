@@ -12,7 +12,9 @@ metadata/_custom_type_script = "uid://dh0rn7o78dy6a"
 [resource]
 script = ExtResource("1_vagu3")
 card_name = "RhythmTwo"
-description = "Duplicate the last rhythm card played"
+description = "Duplicate the
+ last rhythm 
+card played"
 rhythm = 1
 art = SubResource("PlaceholderTexture2D_d8u10")
 effect = SubResource("Resource_bmxlf")

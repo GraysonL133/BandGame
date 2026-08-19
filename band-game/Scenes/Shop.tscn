@@ -6,10 +6,10 @@
 script = ExtResource("1_kjfcx")
 
 [node name="Button" type="Button" parent="." unique_id=1979497881]
-offset_left = 313.0
-offset_top = 288.0
-offset_right = 321.0
-offset_bottom = 296.0
+offset_left = 734.0
+offset_top = 303.0
+offset_right = 846.0
+offset_bottom = 334.0
 scale = Vector2(3.232348, 3.1002052)
 text = "Back to game"
 

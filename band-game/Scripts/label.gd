@@ -12,8 +12,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	rhythmLabel.text = "Rhythm Score: " + str(owner.rhythmScore)
-	leadLabel.text = "Lead Score: " + str(owner.leadScore)
-	singLabel.text = "Sing Score: " + str(owner.singScore)
-	totalLabel.text = "Total Score: " + str(owner.totalScore)
-	turnLabel.text = "Turn Score: " + str(owner.turnScore)
+	rhythmLabel.text = "Rhythm Score: " + str(GameState.rhythmScore)
+	leadLabel.text = "Lead Score: " + str(GameState.leadScore)
+	singLabel.text = "x" + str(GameState.singScore)
+	totalLabel.text = "Total Score: " + str(GameState.totalScore)
+	turnLabel.text = "Turn Score: " + str(GameState.turnScore)
