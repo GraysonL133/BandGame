@@ -1,7 +1,7 @@
 class_name RhythmTwoEffect
 extends CardEffect
 
-@export var rhythm: int = 1
+@export var rhythm: int = 10
 
 func execute(game, _target):
 	print("Duplicated the last R Card played.")

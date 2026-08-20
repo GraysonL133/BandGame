@@ -1,18 +1,18 @@
 [gd_resource type="Resource" script_class="CardData" format=3 uid="uid://d1d64e5neud2i"]
 
-[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="1_1y2c3"]
-[ext_resource type="Script" uid="uid://bmx2au0phvg3l" path="res://Cards/Card Effects/RhythmEffect.gd" id="1_twfi3"]
+[ext_resource type="Script" uid="uid://bmx2au0phvg3l" path="res://Cards/Card Effects/RhythmEffect.gd" id="1_scwjl"]
+[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="2_4yie7"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_lgr22"]
 
 [sub_resource type="Resource" id="Resource_jdnf1"]
-script = ExtResource("1_twfi3")
+script = ExtResource("1_scwjl")
+rhythm = 10
 metadata/_custom_type_script = "uid://bmx2au0phvg3l"
 
 [resource]
-script = ExtResource("1_1y2c3")
-card_name = "Rhythm"
-rhythm = 10
+script = ExtResource("2_4yie7")
+card_name = "Note"
 art = SubResource("PlaceholderTexture2D_lgr22")
 effect = SubResource("Resource_jdnf1")
 type = 1

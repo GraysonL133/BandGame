@@ -1,19 +1,18 @@
 [gd_resource type="Resource" script_class="CardData" format=3 uid="uid://dv58272u34d1a"]
 
-[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="1_4fd75"]
-[ext_resource type="Script" uid="uid://b7cvxi5i7xbbw" path="res://Cards/Card Effects/SingEffect.gd" id="1_u0ru8"]
+[ext_resource type="Script" uid="uid://b7cvxi5i7xbbw" path="res://Cards/Card Effects/SingEffect.gd" id="1_p4nou"]
+[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="2_ix6vv"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bnydf"]
 
 [sub_resource type="Resource" id="Resource_vy5pj"]
-script = ExtResource("1_u0ru8")
+script = ExtResource("1_p4nou")
 metadata/_custom_type_script = "uid://b7cvxi5i7xbbw"
 
 [resource]
-script = ExtResource("1_4fd75")
-card_name = "Sing"
+script = ExtResource("2_ix6vv")
+card_name = "Note"
 description = "Add 10 Sing."
-sing = 10
 art = SubResource("PlaceholderTexture2D_bnydf")
 effect = SubResource("Resource_vy5pj")
 type = 3

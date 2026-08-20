@@ -2,16 +2,14 @@
 extends Node2D
 
 @export var card_scene: PackedScene          # Card.tscn
-@export var starting_deck: Array[CardData] = []
+@export var starting_deck_r: Array[CardData] = []
+@export var starting_deck_l: Array[CardData] = []
+@export var starting_deck_s: Array[CardData] = []
+@onready var starting_deck: Array[CardData] = []
+
+@export var Class = "Rhythm"
+
 @onready var roundLabel = $WorldLayer/RoundLabel
-
-# Declare Score Variables
-#@onready var rhythmScore = 0
-#@onready var leadScore = 0
-#@onready var singScore = 0
-#@onready var totalScore = 0
-#@onready var turnScore = 0
-
 
 @onready var lead_label: Label
 
@@ -21,13 +19,16 @@ extends Node2D
 
 @onready var spacing = 60
 
+@onready var energy_portion
+@onready var energy_bar_start = $WorldLayer/EnergyBarBorder/EnergyBar.size.y
+
 var ghost_nodes: Array = []
 var deck: Array[CardData] = []
 var hand: Array[Card] = []
 var discard: Array[CardData] = []
 var rCards: Array = []
 
-const HAND_SIZE := 5
+const HAND_SIZE := 999
 
 @onready var hand_container = $HandLayer/HandContainer
 @onready var ghost_container: HBoxContainer = $GhostLayer/ghostContainer 
@@ -35,9 +36,10 @@ const HAND_SIZE := 5
 @onready var ghost: Control
 
 # game.gd (continued)
-@export var max_energy := 999
-var energy := 999
+@export var max_energy := 5
+var energy := 5
 
+@onready var energy_bar: ColorRect = $WorldLayer/EnergyBarBorder/EnergyBar
 
 
 func _ready_connections() -> void:
@@ -50,10 +52,10 @@ func _on_card_played(card: Card) -> void:
 	print("_on_card_played ran. Card data: ", card_data.card_name)
 	if card_data.cost > energy:
 		return                       # not enough energy this turn
-
-	energy -= card_data.cost
+	
+	updateEnergy(card_data)
 	apply_effect(card_data)
-
+	
 	# Move the card out of the hand and into the discard pile.
 	hand.erase(card)
 	discard.append(card_data)
@@ -66,6 +68,9 @@ func apply_effect(card_data: CardData) -> void:
 			rCards.append(card_data)
 			createGhost(card_data)
 
+func updateEnergy(card_data: CardData):
+	energy -= card_data.cost
+	energy_bar.size.y -= energy_portion
 
 func addRhythm(amount):
 	GameState.rhythmScore += amount
@@ -77,19 +82,38 @@ func addSing(amount):
 	GameState.singScore += amount
 
 func duplicateLastRCard():
-		var card_data = rCards.back()
-		if (card_data == null):
+		if (rCards.is_empty()):
 			return
+		var card_data = rCards.back()
 		rCards.append(card_data)
 		createGhost(card_data)
 
 func _on_card_hovered(card):
 	rearrange_hand(card)
 
-func calculateScore(rhythm, lead, sing):
+func calculateScore():
+	print("")
+	var lead = GameState.leadScore
+	var sing = GameState.singScore
+	var rhythm
 	for i in range(rCards.size()):
-		GameState.turnScore = (((GameState.totalScore + rCards[i].rhythm) * lead) * sing)
-	GameState.totalScore = (GameState.totalScore + GameState.turnScore)
+		rhythm = rCards[i].effect.rhythm
+		print("--")
+		print(str(rCards[i]))
+		print(str(rhythm))
+		print("--")
+		GameState.turnScore += (((rhythm) * lead) * sing)
+	print("Lead Score: " + str(lead))
+	print("Sing Score: " + str(sing))
+	print("Rhythm Score: " + str(rhythm))
+	print("Total Score: " + str(GameState.totalScore))
+	print("Turn Score: ", GameState.turnScore)
+	print("Total Score: ", GameState.totalScore , 
+	" + " , GameState.turnScore)
+	GameState.totalScore += GameState.turnScore
+	print("= " , GameState.totalScore)
+	print("rCards size: ", rCards.size())
+	clearScore()
 
 func clearScore():
 	GameState.rhythmScore = 0
@@ -100,7 +124,7 @@ func clearScore():
 func clear_ghosts():
 	for ghost_node in ghost_nodes:
 		ghost_node.queue_free()
-	
+		
 	ghost_nodes.clear()
 	rCards.clear()
 
@@ -122,6 +146,15 @@ func _ready() -> void:
 
 func build_deck() -> void:
 	deck.clear()
+	
+	match Class:
+		"Rhythm":
+			starting_deck = starting_deck_r
+		"Lead":
+			starting_deck = starting_deck_l
+		"Sing":
+			starting_deck = starting_deck_s
+	
 	for card_data in starting_deck:
 		deck.append(card_data)      # one entry per card in the deck
 	deck.shuffle()
@@ -172,6 +205,7 @@ func reshuffle_discard_into_deck() -> void:
 	
 # game.gd (continued)
 func start_turn() -> void:
+	energy_bar.size.y = energy_bar_start
 	updateRound()
 	energy = max_energy
 	draw_hand()
@@ -183,14 +217,9 @@ func end_turn() -> void:
 	for card in hand:
 		discard.append(card.data)
 		card.queue_free()
-	calculateScore(GameState.rhythmScore, GameState.leadScore, GameState.singScore)
+	calculateScore()
 	hand.clear()
 	clear_ghosts()
-	print("Lead Score: " + str(GameState.leadScore))
-	print("Sing Score: " + str(GameState.singScore))
-	print("Rhythm Score: " + str(GameState.rhythmScore))
-	print("Total Score: " + str(GameState.totalScore))
-	clearScore()
 	start_turn()
 	if (currentRound > roundTarget):
 		goToShop()                     # next turn (enemy turn would go here)
@@ -201,6 +230,7 @@ func goToShop():
 func updateRound():
 	currentRound = currentRound + 1
 	roundLabel.text = str(currentRound) + "/" + str(roundTarget)
+	energy_portion = energy_bar.size.y/max_energy
 
 func _on_button_pressed() -> void:
 	end_turn()
@@ -210,18 +240,40 @@ var ghost_start_y := 0.0
 
 
 func _on_add_rhythm_button_pressed() -> void:                 # nothing left anywhere
-	var card_data: CardData = preload("res://Cards/Rhythm.tres")
+	var card_data: CardData = preload("res://Cards/RNote.tres")
 	deck.append(card_data)
 	draw_card()
 
 
 func _on_add_lead_button_pressed() -> void:
-	var card_data: CardData = preload("res://Cards/Lead.tres")
+	var card_data: CardData = preload("res://Cards/LNote.tres")
 	deck.append(card_data)
 	draw_card()
 
 
 func _on_add_sing_button_pressed() -> void:
-	var card_data: CardData = preload("res://Cards/Sing.tres")
+	var card_data: CardData = preload("res://Cards/SNote.tres")
 	deck.append(card_data)
 	draw_card()
+	
+func changeClass(new_class: String):
+	Class = new_class
+	for card in hand:
+		card.queue_free()
+	deck.clear()
+	hand.clear()
+	build_deck()
+	draw_hand()
+
+
+func _on_change_class_rhythm_button_pressed() -> void:
+	changeClass("Rhythm")
+	
+
+
+func _on_change_class_lead_button_pressed() -> void:
+	changeClass("Lead")
+
+
+func _on_change_class_sing_button_pressed() -> void:
+	changeClass("Sing")

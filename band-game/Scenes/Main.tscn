@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://b8jbs1mxfbfx5"]
 
 [ext_resource type="Script" uid="uid://d1ldqep0pyhp8" path="res://Scripts/game.gd" id="1_vy5pj"]
-[ext_resource type="PackedScene" uid="uid://dv1wjw47oodul" path="res://Card.tscn" id="2_bmxlf"]
+[ext_resource type="PackedScene" uid="uid://dv1wjw47oodul" path="res://Scenes/Card.tscn" id="2_bmxlf"]
 [ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="3_4kpch"]
-[ext_resource type="Resource" uid="uid://cfq8vsh4xbmcn" path="res://Cards/Lead.tres" id="4_grg3l"]
-[ext_resource type="Resource" uid="uid://d1d64e5neud2i" path="res://Cards/Rhythm.tres" id="5_frkhe"]
-[ext_resource type="Resource" uid="uid://dv58272u34d1a" path="res://Cards/Sing.tres" id="6_1p5hy"]
-[ext_resource type="Resource" uid="uid://dulhr2fpyfbpq" path="res://Cards/RhythmTwo.tres" id="7_bmxlf"]
+[ext_resource type="Resource" uid="uid://cfq8vsh4xbmcn" path="res://Cards/LNote.tres" id="4_grg3l"]
+[ext_resource type="Resource" uid="uid://d1d64e5neud2i" path="res://Cards/RNote.tres" id="5_frkhe"]
+[ext_resource type="Resource" uid="uid://dv58272u34d1a" path="res://Cards/SNote.tres" id="6_1p5hy"]
+[ext_resource type="Resource" uid="uid://dulhr2fpyfbpq" path="res://Cards/Rewind.tres" id="7_bmxlf"]
 [ext_resource type="Script" uid="uid://5vwghrcpoaqc" path="res://Scripts/Hand.gd" id="7_vy5pj"]
 [ext_resource type="Script" uid="uid://2yfkgw1e5e6i" path="res://Scripts/play_area.gd" id="8_erwvk"]
 [ext_resource type="Script" uid="uid://d380rjxeklfh7" path="res://Scripts/label.gd" id="9_2w5on"]
@@ -14,7 +14,9 @@
 [node name="Main" type="Node2D" unique_id=1658555960]
 script = ExtResource("1_vy5pj")
 card_scene = ExtResource("2_bmxlf")
-starting_deck = Array[ExtResource("3_4kpch")]([ExtResource("4_grg3l"), ExtResource("5_frkhe"), ExtResource("6_1p5hy"), ExtResource("7_bmxlf")])
+starting_deck_r = Array[ExtResource("3_4kpch")]([ExtResource("7_bmxlf"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe")])
+starting_deck_l = Array[ExtResource("3_4kpch")]([ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l")])
+starting_deck_s = Array[ExtResource("3_4kpch")]([ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy")])
 
 [node name="HandLayer" type="CanvasLayer" parent="." unique_id=1302286153]
 layer = 10
@@ -80,26 +82,6 @@ offset_bottom = 160.0
 scale = Vector2(3.3019056, 2.5880637)
 text = "Round"
 
-[node name="RhythmLabel" type="Label" parent="WorldLayer" unique_id=957274054]
-visible = false
-offset_left = 111.00001
-offset_top = 142.0
-offset_right = 218.0
-offset_bottom = 165.0
-scale = Vector2(3.3019056, 2.5880637)
-text = "Rhythm Score:"
-script = ExtResource("9_2w5on")
-
-[node name="LeadLabel" type="Label" parent="WorldLayer" unique_id=1161486049]
-visible = false
-offset_left = 109.0
-offset_top = 208.0
-offset_right = 192.0
-offset_bottom = 231.0
-scale = Vector2(3.3019056, 2.5880637)
-text = "Lead Score"
-script = ExtResource("9_2w5on")
-
 [node name="SingLabel" type="Label" parent="WorldLayer" unique_id=1140446398]
 offset_left = 879.0
 offset_top = 262.0
@@ -109,36 +91,78 @@ scale = Vector2(4.78, 4.78)
 text = "x1"
 script = ExtResource("9_2w5on")
 
-[node name="TurnLabel" type="Label" parent="WorldLayer" unique_id=296819040]
-visible = false
-offset_left = 109.00001
-offset_top = 333.0
-offset_right = 201.0
-offset_bottom = 356.0
-scale = Vector2(3.3019056, 2.5880637)
-text = "Turn Score:"
-script = ExtResource("9_2w5on")
-
 [node name="AddRhythmButton" type="Button" parent="WorldLayer" unique_id=1772327008]
-offset_left = 94.0
+offset_left = 46.0
 offset_top = 429.0
-offset_right = 248.0
+offset_right = 200.0
 offset_bottom = 460.0
 text = "Add a rhythm Card"
 
 [node name="AddLeadButton" type="Button" parent="WorldLayer" unique_id=246141722]
-offset_left = 96.0
+offset_left = 48.0
 offset_top = 481.0
-offset_right = 250.0
+offset_right = 202.0
 offset_bottom = 512.0
 text = "Add a lead Card"
 
 [node name="AddSingButton" type="Button" parent="WorldLayer" unique_id=1565419901]
-offset_left = 94.0
+offset_left = 46.0
 offset_top = 536.0
-offset_right = 248.0
+offset_right = 200.0
 offset_bottom = 567.0
 text = "Add a sing Card"
+
+[node name="ChangeClassRhythmButton" type="Button" parent="WorldLayer" unique_id=392512008]
+offset_left = 211.0
+offset_top = 431.0
+offset_right = 365.0
+offset_bottom = 462.0
+text = "Equip Rhythm Class"
+
+[node name="ChangeClassLeadButton" type="Button" parent="WorldLayer" unique_id=2140979919]
+offset_left = 213.0
+offset_top = 483.0
+offset_right = 367.0
+offset_bottom = 514.0
+text = "Equip Lead Class"
+
+[node name="ChangeClassSingButton" type="Button" parent="WorldLayer" unique_id=1013356208]
+offset_left = 211.0
+offset_top = 538.0
+offset_right = 365.0
+offset_bottom = 569.0
+text = "Equip Sing Class"
+
+[node name="EnergyBarBorder" type="ColorRect" parent="WorldLayer" unique_id=1481108581]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -454.9999
+offset_top = -552.0
+offset_right = -414.9999
+offset_bottom = -512.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(2.040001, 6.36)
+color = Color(0, 0, 0, 1)
+
+[node name="EnergyBar" type="ColorRect" parent="WorldLayer/EnergyBarBorder" unique_id=829305727]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -3.0
+offset_right = 45.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+rotation = 3.1415927
+offset_transform_visual_only = false
 
 [node name="GhostLayer" type="CanvasLayer" parent="." unique_id=2069914496]
 
@@ -148,10 +172,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -419.0
-offset_top = -138.0
-offset_right = -259.0
-offset_bottom = 62.0
+offset_left = -172.0
+offset_top = -146.0
+offset_right = -12.0
+offset_bottom = 54.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 200
@@ -163,3 +187,6 @@ alignment = 1
 [connection signal="pressed" from="WorldLayer/AddRhythmButton" to="." method="_on_add_rhythm_button_pressed"]
 [connection signal="pressed" from="WorldLayer/AddLeadButton" to="." method="_on_add_lead_button_pressed"]
 [connection signal="pressed" from="WorldLayer/AddSingButton" to="." method="_on_add_sing_button_pressed"]
+[connection signal="pressed" from="WorldLayer/ChangeClassRhythmButton" to="." method="_on_change_class_rhythm_button_pressed"]
+[connection signal="pressed" from="WorldLayer/ChangeClassLeadButton" to="." method="_on_change_class_lead_button_pressed"]
+[connection signal="pressed" from="WorldLayer/ChangeClassSingButton" to="." method="_on_change_class_sing_button_pressed"]
