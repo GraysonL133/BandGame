@@ -31,15 +31,19 @@ var rCards: Array = []
 const HAND_SIZE := 999
 
 @onready var hand_container = $HandLayer/HandContainer
-@onready var ghost_container: HBoxContainer = $GhostLayer/ghostContainer 
+@onready var ghost_container: FlowContainer = $GhostLayer/ghostContainer 
 
 @onready var ghost: Control
 
 # game.gd (continued)
-@export var max_energy := 5
-var energy := 5
+@export var max_energy := 999
+var energy := 999
 
 @onready var energy_bar: ColorRect = $WorldLayer/EnergyBarBorder/EnergyBar
+
+@onready var ghost_container_start_scale = ghost_container.scale
+@onready var ghost_container_start_pos = ghost_container.global_position
+
 
 
 func _ready_connections() -> void:
@@ -92,30 +96,15 @@ func _on_card_hovered(card):
 	rearrange_hand(card)
 
 func calculateScore():
-	print("")
 	var lead = GameState.leadScore
 	var sing = GameState.singScore
 	var rhythm
 	for i in range(rCards.size()):
 		rhythm = rCards[i].effect.rhythm
-		print("--")
-		print(str(rCards[i]))
-		print(str(rhythm))
-		print("--")
 		GameState.turnScore += (((rhythm) * lead) * sing)
-	print("Lead Score: " + str(lead))
-	print("Sing Score: " + str(sing))
-	print("Rhythm Score: " + str(rhythm))
-	print("Total Score: " + str(GameState.totalScore))
-	print("Turn Score: ", GameState.turnScore)
-	print("Total Score: ", GameState.totalScore , 
-	" + " , GameState.turnScore)
-	GameState.totalScore += GameState.turnScore
-	print("= " , GameState.totalScore)
-	print("rCards size: ", rCards.size())
-	clearScore()
+	clear_score()
 
-func clearScore():
+func clear_score():
 	GameState.rhythmScore = 0
 	GameState.leadScore = 1
 	GameState.singScore = 1
@@ -127,6 +116,7 @@ func clear_ghosts():
 		
 	ghost_nodes.clear()
 	rCards.clear()
+	#updateContainer()
 
 func createGhost(card):
 	ghost = card_scene.instantiate()
@@ -134,8 +124,9 @@ func createGhost(card):
 	ghost_container.add_child(ghost)
 	ghost_nodes.append(ghost)
 	ghost.modulate.a = 0.5
-	ghost_container.position = Vector2(500, 300)
-	ghost.scale = Vector2(0.2,0.2)
+	
+	updateContainer()
+	ghost_container.queue_sort()
 	ghost.start_ghost_animation()
 
 func _ready() -> void:
@@ -211,7 +202,6 @@ func start_turn() -> void:
 	draw_hand()
 
 
-
 func end_turn() -> void:
 	# Discard the whole hand.
 	for card in hand:
@@ -277,3 +267,25 @@ func _on_change_class_lead_button_pressed() -> void:
 
 func _on_change_class_sing_button_pressed() -> void:
 	changeClass("Sing")
+	
+func _process(delta):
+	for i in range(ghost_nodes.size()):
+		var start = ghost_nodes[i].position.y
+		ghost_nodes[i].animate(delta, start , i)
+
+func updateContainer():
+	
+	var scale_factor = 0.28
+	var new_scale = ghost_container_start_scale/(rCards.size() * scale_factor)
+	
+	if (rCards.is_empty()):
+		# If there are no rhythm cards, reset the scale
+		ghost_container.scale = ghost_container_start_scale
+		ghost_container.global_position = ghost_container_start_pos
+
+	elif (new_scale > ghost_container_start_scale):
+		# If it would make the container bigger do not run
+		return	
+	
+	else:
+		ghost_container.scale = new_scale

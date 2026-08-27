@@ -3,9 +3,6 @@ class_name Card
 extends Control
 
 @export var data: CardData
-@export var start_y := 0.0
-@export var animation_time := 0.0
-@export var is_animating := false
 
 @onready var name_label: Label = $NameLabel
 @onready var cost_label: Label = $CostLabel
@@ -13,8 +10,12 @@ extends Control
 @onready var background: TextureRect = $Background
 #@onready var border: Panel = $Border
 @onready var lead_label: Label = $LeadLabel
-
 @onready var Main = $"../.."
+
+@export var animation_time := 0.0
+@export var is_animating := false
+
+#@onready var start_y = position.y
 
 signal cardHovered(card: Card)
 
@@ -36,8 +37,6 @@ func setup(card_data: CardData) -> void:
 
 func start_ghost_animation():
 	is_animating = true
-	animation_time = 0.0
-	start_y = position.y
 	lead_label.visible = true
 	#border.visible = false
 
@@ -50,12 +49,16 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	# Return THIS card as the payload the play area will receive.
 	return self
 
-func _process(delta):
+func _process(_delta):
+	lead_label.text = ("x" + str(GameState.leadScore))
+
+func animate(delta, start_y, index):
 	if not is_animating:
 		return
 	animation_time += delta
-	position.y = start_y + sin(animation_time * 2.0) * 10.0
-	lead_label.text = ("x" + str(GameState.leadScore))
+	if animation_time < index * 0.2:
+		return
+	position.y = start_y + sin(animation_time*2)
 
 func _on_mouse_entered() -> void:
 	cardHovered.emit(self)
