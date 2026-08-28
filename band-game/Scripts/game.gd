@@ -9,18 +9,9 @@ extends Node2D
 
 @export var Class = "Rhythm"
 
-@onready var roundLabel = $WorldLayer/RoundLabel
-
 @onready var lead_label: Label
 
-#Declare which round it is
-@onready var currentRound = 0
-@export var roundTarget = 5
-
 @onready var spacing = 60
-
-@onready var energy_portion
-@onready var energy_bar_start = $WorldLayer/EnergyBarBorder/EnergyBar.size.y
 
 var ghost_nodes: Array = []
 var deck: Array[CardData] = []
@@ -41,10 +32,10 @@ var energy := 999
 
 @onready var energy_bar: ColorRect = $WorldLayer/EnergyBarBorder/EnergyBar
 
-@onready var ghost_container_start_scale = ghost_container.scale
-@onready var ghost_container_start_pos = ghost_container.global_position
+@onready var ghost_time := 0.0
+@onready var ghost_start_y := 0.0
 
-
+signal turn_ended(game)
 
 func _ready_connections() -> void:
 	$WorldLayer/PlayArea.card_played.connect(_on_card_played)
@@ -54,27 +45,26 @@ func _on_card_played(card: Card) -> void:
 	
 	var card_data := card.data
 	print("_on_card_played ran. Card data: ", card_data.card_name)
-	if card_data.cost > energy:
+	if card_data.cost > GameState.energy:
+		print("Not enough energy")
+		print("Current energy: " , GameState.energy)
+		print("Cost: " , card_data.cost)
 		return                       # not enough energy this turn
-	
-	updateEnergy(card_data)
+
 	apply_effect(card_data)
 	
 	# Move the card out of the hand and into the discard pile.
 	hand.erase(card)
 	discard.append(card_data)
-	card.queue_free()                # remove the scene instance
-
+	card.queue_free() # remove the scene instance
+	energy_bar._update_energy(card_data)
+	
 func apply_effect(card_data: CardData) -> void:
 	card_data.effect.execute(self, null)
 	match card_data.type:
 		1:
 			rCards.append(card_data)
 			createGhost(card_data)
-
-func updateEnergy(card_data: CardData):
-	energy -= card_data.cost
-	energy_bar.size.y -= energy_portion
 
 func addRhythm(amount):
 	GameState.rhythmScore += amount
@@ -102,8 +92,8 @@ func calculateScore():
 	for i in range(rCards.size()):
 		rhythm = rCards[i].effect.rhythm
 		GameState.turnScore += (((rhythm) * lead) * sing)
-	clear_score()
-
+	GameState.totalScore += GameState.turnScore
+	
 func clear_score():
 	GameState.rhythmScore = 0
 	GameState.leadScore = 1
@@ -113,7 +103,7 @@ func clear_score():
 func clear_ghosts():
 	for ghost_node in ghost_nodes:
 		ghost_node.queue_free()
-		
+	
 	ghost_nodes.clear()
 	rCards.clear()
 	#updateContainer()
@@ -125,7 +115,7 @@ func createGhost(card):
 	ghost_nodes.append(ghost)
 	ghost.modulate.a = 0.5
 	
-	updateContainer()
+	#updateContainer()
 	ghost_container.queue_sort()
 	ghost.start_ghost_animation()
 
@@ -169,9 +159,9 @@ func draw_hand() -> void:
 		draw_card()
 
 func rearrange_hand(card):
-	
+
 	var center_index = (hand.size() - 1) / 2.0
-	
+
 	for i in range(hand.size()):
 		# Base resting position for each card
 		var target_x = (i - center_index) * spacing
@@ -193,41 +183,39 @@ func reshuffle_discard_into_deck() -> void:
 	deck.append_array(discard)
 	discard.clear()
 	deck.shuffle()
-	
+
 # game.gd (continued)
 func start_turn() -> void:
-	energy_bar.size.y = energy_bar_start
 	updateRound()
 	energy = max_energy
 	draw_hand()
 
 
 func end_turn() -> void:
+	calculateScore()
+	turn_ended.emit()
+	
 	# Discard the whole hand.
 	for card in hand:
 		discard.append(card.data)
 		card.queue_free()
-	calculateScore()
+
+	clear_score()
 	hand.clear()
 	clear_ghosts()
 	start_turn()
-	if (currentRound > roundTarget):
+	if (GameState.currentRound > GameState.roundTarget):
 		goToShop()                     # next turn (enemy turn would go here)
 
 func goToShop():
+	GameState.currentRound = 0
 	get_tree().change_scene_to_file("res://Scenes/Shop.tscn")
 
 func updateRound():
-	currentRound = currentRound + 1
-	roundLabel.text = str(currentRound) + "/" + str(roundTarget)
-	energy_portion = energy_bar.size.y/max_energy
+	GameState.currentRound = GameState.currentRound + 1
 
 func _on_button_pressed() -> void:
 	end_turn()
-
-var ghost_time := 0.0
-var ghost_start_y := 0.0
-
 
 func _on_add_rhythm_button_pressed() -> void:                 # nothing left anywhere
 	var card_data: CardData = preload("res://Cards/RNote.tres")
@@ -258,7 +246,7 @@ func changeClass(new_class: String):
 
 func _on_change_class_rhythm_button_pressed() -> void:
 	changeClass("Rhythm")
-	
+
 
 
 func _on_change_class_lead_button_pressed() -> void:
@@ -267,25 +255,14 @@ func _on_change_class_lead_button_pressed() -> void:
 
 func _on_change_class_sing_button_pressed() -> void:
 	changeClass("Sing")
-	
+
+
 func _process(delta):
+	for i in discard.size():
+		if discard[i].effect.has_method("flow"):
+			discard[i].effect.flow()
+	
 	for i in range(ghost_nodes.size()):
 		var start = ghost_nodes[i].position.y
 		ghost_nodes[i].animate(delta, start , i)
-
-func updateContainer():
 	
-	var scale_factor = 0.28
-	var new_scale = ghost_container_start_scale/(rCards.size() * scale_factor)
-	
-	if (rCards.is_empty()):
-		# If there are no rhythm cards, reset the scale
-		ghost_container.scale = ghost_container_start_scale
-		ghost_container.global_position = ghost_container_start_pos
-
-	elif (new_scale > ghost_container_start_scale):
-		# If it would make the container bigger do not run
-		return	
-	
-	else:
-		ghost_container.scale = new_scale

@@ -52,6 +52,15 @@ scale = Vector2(2, 2)
 text = "x3"
 horizontal_alignment = 1
 
+[node name="RhythmLabel" type="Label" parent="." unique_id=312064149]
+layout_mode = 0
+offset_left = 11.999999
+offset_top = 28.999998
+offset_right = 52.0
+offset_bottom = 52.0
+scale = Vector2(3.7837596, 5.523437)
+text = "+10"
+
 [node name="Border" type="Panel" parent="." unique_id=591219342]
 visible = false
 show_behind_parent = true

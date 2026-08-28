@@ -6,15 +6,28 @@
 [ext_resource type="Resource" uid="uid://cfq8vsh4xbmcn" path="res://Cards/LNote.tres" id="4_grg3l"]
 [ext_resource type="Resource" uid="uid://d1d64e5neud2i" path="res://Cards/RNote.tres" id="5_frkhe"]
 [ext_resource type="Resource" uid="uid://dv58272u34d1a" path="res://Cards/SNote.tres" id="6_1p5hy"]
+[ext_resource type="Resource" uid="uid://uc5dvvjb5c8u" path="res://Cards/Flow.tres" id="6_4kpch"]
 [ext_resource type="Resource" uid="uid://dulhr2fpyfbpq" path="res://Cards/Rewind.tres" id="7_bmxlf"]
 [ext_resource type="Script" uid="uid://5vwghrcpoaqc" path="res://Scripts/Hand.gd" id="7_vy5pj"]
 [ext_resource type="Script" uid="uid://2yfkgw1e5e6i" path="res://Scripts/play_area.gd" id="8_erwvk"]
 [ext_resource type="Script" uid="uid://d380rjxeklfh7" path="res://Scripts/label.gd" id="9_2w5on"]
+[ext_resource type="Script" uid="uid://c746l0j2bp5h0" path="res://Scenes/energy_bar.gd" id="12_grg3l"]
+[ext_resource type="Script" uid="uid://cegw8xfr43bpo" path="res://Scenes/ghost_container.gd" id="13_frkhe"]
+[ext_resource type="Texture2D" uid="uid://b78f76xy8robt" path="res://band game background.png" id="14_1p5hy"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4dmor"]
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_2epnw"]
+font_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7ggyt"]
+font_color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Node2D" unique_id=1658555960]
 script = ExtResource("1_vy5pj")
 card_scene = ExtResource("2_bmxlf")
-starting_deck_r = Array[ExtResource("3_4kpch")]([ExtResource("7_bmxlf"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe")])
+starting_deck_r = Array[ExtResource("3_4kpch")]([ExtResource("7_bmxlf"), ExtResource("6_4kpch"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe"), ExtResource("5_frkhe")])
 starting_deck_l = Array[ExtResource("3_4kpch")]([ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l"), ExtResource("4_grg3l")])
 starting_deck_s = Array[ExtResource("3_4kpch")]([ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy"), ExtResource("6_1p5hy")])
 
@@ -34,8 +47,6 @@ offset_right = 6945.8003
 offset_bottom = 10913.8
 grow_horizontal = 1
 grow_vertical = 1
-animation_time = 0.0
-is_animating = false
 metadata/_edit_use_anchors_ = true
 
 [node name="HandContainer" type="Control" parent="HandLayer" unique_id=528911650]
@@ -68,22 +79,24 @@ offset_bottom = 439.99997
 scale = Vector2(2.695914, 2.0508919)
 text = "End Turn"
 
-[node name="TotalLabel" type="Label" parent="WorldLayer" unique_id=1394098846]
-offset_left = 604.00006
-offset_top = 74.0
-offset_right = 696.00006
-offset_bottom = 97.0
-scale = Vector2(3.3019056, 2.5880637)
-text = "Total Score:"
-script = ExtResource("9_2w5on")
-
 [node name="RoundLabel" type="Label" parent="WorldLayer" unique_id=1907730238]
-offset_left = 601.0
-offset_top = 137.0
-offset_right = 693.0
-offset_bottom = 160.0
-scale = Vector2(3.3019056, 2.5880637)
+offset_left = 501.0
+offset_top = 160.0
+offset_right = 593.0
+offset_bottom = 183.0
+scale = Vector2(1.4881057, 1.9638544)
 text = "Round"
+label_settings = SubResource("LabelSettings_4dmor")
+
+[node name="TotalLabel" type="Label" parent="WorldLayer" unique_id=1394098846]
+offset_left = 403.0
+offset_top = 86.0
+offset_right = 495.0
+offset_bottom = 109.0
+scale = Vector2(1.9137776, 2.8086076)
+text = "Total Score:"
+label_settings = SubResource("LabelSettings_2epnw")
+script = ExtResource("9_2w5on")
 
 [node name="SingLabel" type="Label" parent="WorldLayer" unique_id=1140446398]
 offset_left = 879.0
@@ -92,6 +105,7 @@ offset_right = 897.0
 offset_bottom = 285.0
 scale = Vector2(4.78, 4.78)
 text = "x1"
+label_settings = SubResource("LabelSettings_7ggyt")
 script = ExtResource("9_2w5on")
 
 [node name="AddRhythmButton" type="Button" parent="WorldLayer" unique_id=1772327008]
@@ -142,10 +156,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -454.9999
-offset_top = -552.0
-offset_right = -414.9999
-offset_bottom = -512.0
+offset_left = 465.00012
+offset_top = -255.0
+offset_right = 505.00012
+offset_bottom = -215.0
 grow_horizontal = 2
 grow_vertical = 0
 scale = Vector2(2.040001, 6.36)
@@ -166,6 +180,7 @@ grow_horizontal = 2
 grow_vertical = 0
 rotation = 3.1415927
 offset_transform_visual_only = false
+script = ExtResource("12_grg3l")
 
 [node name="GhostLayer" type="CanvasLayer" parent="." unique_id=2069914496]
 
@@ -177,6 +192,13 @@ offset_right = 1024.0
 offset_bottom = 726.0
 size_flags_horizontal = 4
 last_wrap_alignment = 1
+script = ExtResource("13_frkhe")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1761650789]
+offset_right = 1155.0
+offset_bottom = 653.0
+texture = ExtResource("14_1p5hy")
+expand_mode = 1
 
 [connection signal="card_played" from="WorldLayer/PlayArea" to="HandLayer/Card" method="_on_play_area_card_played"]
 [connection signal="pressed" from="WorldLayer/Button" to="." method="_on_button_pressed"]

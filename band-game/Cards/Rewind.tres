@@ -5,7 +5,7 @@
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_d8u10"]
 
-[sub_resource type="Resource" id="Resource_bmxlf"]
+[sub_resource type="Resource" id="Resource_gwjvj"]
 script = ExtResource("1_3dkox")
 metadata/_custom_type_script = "uid://dh0rn7o78dy6a"
 
@@ -16,6 +16,9 @@ description = "Duplicate the
 last rhythm 
 card played"
 art = SubResource("PlaceholderTexture2D_d8u10")
-effect = SubResource("Resource_bmxlf")
+rhythm = 10
+lead = 0
+sing = 0
+effect = SubResource("Resource_gwjvj")
 type = 1
 metadata/_custom_type_script = "uid://bx6y3057cudoi"

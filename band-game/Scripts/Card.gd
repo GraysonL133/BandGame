@@ -8,9 +8,10 @@ extends Control
 @onready var cost_label: Label = $CostLabel
 @onready var desc_label: Label = $DescLabel
 @onready var background: TextureRect = $Background
+@onready var rhythm_label: Label = $RhythmLabel
 #@onready var border: Panel = $Border
 @onready var lead_label: Label = $LeadLabel
-@onready var Main = $"../.."
+#@onready var Main = $"../.."
 
 @export var animation_time := 0.0
 @export var is_animating := false
@@ -23,6 +24,7 @@ func _ready() -> void:
 	if data:
 		setup(data)
 	lead_label.visible = false
+	rhythm_label.visible = false
 	#border.visible = false
 	#print(str(Main))
 
@@ -38,6 +40,7 @@ func setup(card_data: CardData) -> void:
 func start_ghost_animation():
 	is_animating = true
 	lead_label.visible = true
+	rhythm_label.visible = true
 	#border.visible = false
 
 # --- Drag and drop (Godot 4 Control virtuals) ---
@@ -51,15 +54,21 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 
 func _process(_delta):
 	lead_label.text = ("x" + str(GameState.leadScore))
-
-func animate(delta, start_y, index):
+	update_rhythm_label(data)
+	
+func animate(delta, start_y, _index):
 	if not is_animating:
 		return
 	animation_time += delta
-	if animation_time < index * 0.2:
-		return
-	position.y = start_y + sin(animation_time*2)
+	position.y = start_y + sin((animation_time) * 2)
 
 func _on_mouse_entered() -> void:
 	cardHovered.emit(self)
 	#border.visible = true
+
+func update_rhythm_label(card_data: CardData):
+	if card_data == null:
+		return
+	elif card_data.type > 1:
+		return
+	rhythm_label.text = str(card_data.effect.rhythm)

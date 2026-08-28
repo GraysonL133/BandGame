@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://uc5dvvjb5c8u"]
+
+[ext_resource type="Script" uid="uid://b3nmidb3saxe4" path="res://Cards/Card Effects/FlowEffect.gd" id="1_33mn1"]
+[ext_resource type="Script" uid="uid://bx6y3057cudoi" path="res://Scripts/card_data.gd" id="1_fjo4x"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_grg3l"]
+
+[sub_resource type="Resource" id="Resource_grg3l"]
+script = ExtResource("1_33mn1")
+metadata/_custom_type_script = "uid://b3nmidb3saxe4"
+
+[resource]
+script = ExtResource("1_fjo4x")
+card_name = "Flow"
+cost = 3
+description = "Each *Note* card 
+played this turn gets 
++x score equal to 
+the number of 
+*Note* cards played x 10"
+art = SubResource("PlaceholderTexture2D_grg3l")
+effect = SubResource("Resource_grg3l")
+type = 4
+metadata/_custom_type_script = "uid://bx6y3057cudoi"

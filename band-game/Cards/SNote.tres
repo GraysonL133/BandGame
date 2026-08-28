@@ -5,7 +5,7 @@
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_bnydf"]
 
-[sub_resource type="Resource" id="Resource_vy5pj"]
+[sub_resource type="Resource" id="Resource_scwjl"]
 script = ExtResource("1_p4nou")
 metadata/_custom_type_script = "uid://b7cvxi5i7xbbw"
 
@@ -14,6 +14,7 @@ script = ExtResource("2_ix6vv")
 card_name = "Note"
 description = "Add 10 Sing."
 art = SubResource("PlaceholderTexture2D_bnydf")
-effect = SubResource("Resource_vy5pj")
+lead = 0
+effect = SubResource("Resource_scwjl")
 type = 3
 metadata/_custom_type_script = "uid://bx6y3057cudoi"
